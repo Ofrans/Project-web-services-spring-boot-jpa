@@ -3,6 +3,8 @@ package com.compasso.course.resources;
 
 import com.compasso.course.entities.User;
 import com.compasso.course.services.UserService;
+import com.compasso.course.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +47,12 @@ public class UserResource {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user){
-        user = service.update(id, user);
-        return ResponseEntity.ok().body(user);
+        try {
+            user = service.update(id, user);
+            return ResponseEntity.ok().body(user);
+            }
+        catch (EntityNotFoundException e) {
+            throw new ResourceNotFoundException(id);
+        }
     }
 }
